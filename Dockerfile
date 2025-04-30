@@ -2,13 +2,18 @@
 #                                                                                                                                         
 # ---- 编译环境 ----                                                                                                                      
 
-FROM harbor.leops.local/common/tools/node:22 as builder
+FROM harbor.leops.local/common/tools/node:22 AS builder
 
 ARG APP_ENV=test \
-    APP=undefine
-ENV APP_ENV=$APP_ENV \
-    APP=$APP
+    APP=undefine \
+    GIT_BRANCH= \
+    GIT_COMMIT_ID=
 
+ENV APP_ENV=$APP_ENV \
+    APP=$APP \
+    GIT_BRANCH=$GIT_BRANCH \
+    GIT_COMMIT_ID=$GIT_COMMIT_ID
+	
 WORKDIR /app_build
 
 COPY package.json package-lock.json ./
@@ -27,12 +32,17 @@ RUN --mount=type=cache,id=${APP}-npm,target=/root/.npm \
 #
 # ---- 运行环境 ----
 
-FROM harbor.leops.local/common/runtime/nginx-csr:1.26 as running
+FROM harbor.leops.local/common/runtime/nginx-csr:1.26 AS running
 
 ARG APP_ENV=test \
-    APP=undefine
+    APP=undefine \
+    GIT_BRANCH= \
+    GIT_COMMIT_ID=
+
 ENV APP_ENV=$APP_ENV \
-    APP=$APP
+    APP=$APP \
+    GIT_BRANCH=$GIT_BRANCH \
+    GIT_COMMIT_ID=$GIT_COMMIT_ID
 
 WORKDIR /app
 
